@@ -26,9 +26,11 @@ import org.broadinstitute.consent.http.models.DACUser;
 import org.broadinstitute.consent.http.models.DataSet;
 import org.broadinstitute.consent.http.models.Election;
 import org.broadinstitute.consent.http.models.Vote;
+import org.broadinstitute.consent.http.models.dto.DatasetMailDTO;
 import org.broadinstitute.consent.http.models.dto.ElectionStatusDTO;
 import org.broadinstitute.consent.http.models.grammar.UseRestriction;
 import org.broadinstitute.consent.http.util.DarConstants;
+import org.broadinstitute.consent.http.util.DatasetUtil;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -161,11 +163,15 @@ public class DatabaseElectionAPI extends AbstractElectionAPI {
     }
 
     @Override
-    public Election updateFinalAccessVoteDataRequestElection(Integer electionId) {
+    public Election updateFinalAccessVoteDataRequestElection(Integer electionId) throws Exception {
+        Election election = electionDAO.findElectionWithFinalVoteById(electionId);
         if (electionDAO.findElectionWithFinalVoteById(electionId) == null) {
             throw new NotFoundException("Election for specified id does not exist");
         }
         electionDAO.updateFinalAccessVote(electionId);
+        if(electionDAO.findFinalAccessVote(electionId)) {
+            sendResearcherNotification(election.getReferenceId());
+        }
         return electionDAO.findElectionWithFinalVoteById(electionId);
     }
 
@@ -701,5 +707,19 @@ public class DatabaseElectionAPI extends AbstractElectionAPI {
         }
     }
 
+    private void sendResearcherNotification(String referenceId) throws Exception {
+        BasicDBObject query = new BasicDBObject(DarConstants.ID, new ObjectId(referenceId));
+        Document dar = mongo.getDataAccessRequestCollection().find(query).first();
+        List<Integer> dataSetIdList = dar.get(DarConstants.DATASET_ID, List.class);
+        if(CollectionUtils.isNotEmpty(dataSetIdList)) {
+            List<DataSet> dataSets = dataSetDAO.searchDataSetsByIds(dataSetIdList);
+            List<DatasetMailDTO> datasetsDetail = new ArrayList<>();
+            dataSets.forEach(ds -> {
+                datasetsDetail.add(new DatasetMailDTO(ds.getName(), DatasetUtil.parseAlias(ds.getAlias())));
+            });
+            Consent consent = consentDAO.findConsentFromDatasetID(dataSets.get(0).getDataSetId());
+            emailNotifierAPI.sendResearcherDarApproved(dar.get(DarConstants.DAR_CODE, String.class),  dar.get(DarConstants.USER_ID, Integer.class), datasetsDetail, consent.getTranslatedUseRestriction());
+        }
+    }
 
 }
