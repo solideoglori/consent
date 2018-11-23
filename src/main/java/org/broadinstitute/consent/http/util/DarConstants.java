@@ -61,6 +61,12 @@ public class DarConstants {
 
     public static final String STATE = "state";
 
+    public static final String IS_THE_PI = "isThePi";
+
+    public static final String HAVE_PÏ = "havePi";
+
+    public static final String PI_NAME = "piName";
+
     public static final String ERA_COMMONS_ID = "eRACommonsID";
 
     public static final String PUBMED_ID = "pubmedID";

@@ -29,6 +29,10 @@ public class DARModalDetailsDTO {
     private boolean sensitivePopulation = false;
     private boolean requiresManualReview = false;
     private Integer userId;
+    private boolean isThePi;
+    private boolean havePi;
+    private String profileName;
+    private String piName;
 
     @JsonProperty
     private Map<String, String> datasetDetail;
@@ -46,6 +50,10 @@ public class DARModalDetailsDTO {
     public DARModalDetailsDTO(Document darDocument){
         setDarCode(darDocument.getString(DarConstants.DAR_CODE));
         setPrincipalInvestigator(darDocument.getString(DarConstants.INVESTIGATOR));
+        setProfileName(darDocument.getString(DarConstants.PROFILE_NAME));
+        setIsThePi(Boolean.parseBoolean(darDocument.getString(DarConstants.IS_THE_PI)));
+        setHavePi(Boolean.parseBoolean(darDocument.getString(DarConstants.HAVE_PÏ)));
+        setPiName(darDocument.getString(DarConstants.PI_NAME));
         setInstitutionName(this.institutionName = darDocument.getString(DarConstants.INSTITUTION));
         setProjectTitle(this.projectTitle = darDocument.getString(DarConstants.PROJECT_TITLE));
         setIsThereDiseases(false);
@@ -289,6 +297,38 @@ public class DARModalDetailsDTO {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public boolean isThePi() {
+        return isThePi;
+    }
+
+    public void setIsThePi(boolean isThePi) {
+        this.isThePi = isThePi;
+    }
+
+    public boolean havePi() {
+        return havePi;
+    }
+
+    public void setHavePi(boolean havePi) {
+        this.havePi = havePi;
+    }
+
+    public String getProfileName() {
+        return profileName;
+    }
+
+    public void setProfileName(String profileName) {
+        this.profileName = profileName;
+    }
+
+    public String getPiName() {
+        return piName;
+    }
+
+    public void setPiName(String piName) {
+        this.piName = piName;
     }
 
 }

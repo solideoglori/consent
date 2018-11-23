@@ -59,23 +59,23 @@ public class DatabaseResearcherAPI implements ResearcherAPI{
     public List<ResearcherProperty> updateResearcher(Map<String, String> researcherPropertiesMap, Integer userId, Boolean validate) throws NotFoundException {
         validateUser(userId);
         researcherPropertiesMap.values().removeAll(Collections.singleton(null));
-        if(validate) validateRequiredFields(researcherPropertiesMap);
+        if (validate) validateRequiredFields(researcherPropertiesMap);
         validateExistentFields(researcherPropertiesMap);
         Boolean isUpdatedProfileCompleted = Boolean.valueOf(researcherPropertiesMap.get(ResearcherFields.COMPLETED.getValue()));
         String completed = researcherPropertyDAO.isProfileCompleted(userId);
         Boolean isProfileCompleted = StringUtils.isEmpty(completed) ? false : Boolean.valueOf(completed);
         List<ResearcherProperty> properties = getResearcherProperties(researcherPropertiesMap, userId);
-        if(!isProfileCompleted && isUpdatedProfileCompleted){
+        if (!isProfileCompleted && isUpdatedProfileCompleted) {
             saveProperties(userId, properties);
             notifyAdmins(userId, ACTION_REGISTERED);
-        }else if(hasUpdatedFields(userId, researcherPropertiesMap, isUpdatedProfileCompleted)){
+        } else if (hasUpdatedFields(userId, researcherPropertiesMap, isUpdatedProfileCompleted)) {
             saveProperties(userId, properties);
             DACUserRole dacUserRole = new DACUserRole();
             dacUserRole.setStatus(RoleStatus.PENDING.toString());
             dacUserRole.setRoleId(5);
             dacUserAPI.updateRoleStatus(dacUserRole, userId);
             notifyAdmins(userId, ACTION_UPDATED);
-        }else{
+        } else {
             saveProperties(userId, properties);
         }
         return describeResearcherProperties(userId);
