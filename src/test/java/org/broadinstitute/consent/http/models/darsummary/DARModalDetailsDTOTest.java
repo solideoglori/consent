@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +29,11 @@ public class DARModalDetailsDTOTest {
     private final String INSTITUTION = "Mocked Institution";
     private final String TITLE = "Mocked Title";
     private final String OTHERTEXT = "Other text";
+    private static final String PROFILE_NAME = "Profile Name";
+    private static final String PI_NAME = "Pi Name";
+    private static final String DEPARTMENT = "Researcher department";
+    private static final String CITY = "City";
+    private static final String COUNTRY = "Country";
 
     @Before
     public void setUp() throws Exception {
@@ -49,9 +55,7 @@ public class DARModalDetailsDTOTest {
         when(darDocument.containsKey("other")).thenReturn(true);
         when(darDocument.getBoolean("other")).thenReturn(true);
         when(darDocument.getString("othertext")).thenReturn(OTHERTEXT);
-
         when(darDocument.get("ontologies")).thenReturn(ontologies());
-
         when(darDocument.getBoolean("forProfit")).thenReturn(false);
         when(darDocument.getBoolean("onegender")).thenReturn(true);
         when(darDocument.getString("gender")).thenReturn("F");
@@ -65,6 +69,13 @@ public class DARModalDetailsDTOTest {
         when(darDocument.getBoolean("psychtraits")).thenReturn(true);
         when(darDocument.getBoolean("nothealth")).thenReturn(true);
         when(darDocument.getBoolean("popmigration")).thenReturn(true);
+        when(darDocument.getString(DarConstants.HAVE_PÏ)).thenReturn("false");
+        when(darDocument.getString(DarConstants.IS_THE_PI)).thenReturn("true");
+        when(darDocument.getString(DarConstants.PROFILE_NAME)).thenReturn(PROFILE_NAME);
+        when(darDocument.getString(DarConstants.PI_NAME)).thenReturn(PI_NAME);
+        when(darDocument.getString(DarConstants.DEPARTMENT)).thenReturn(DEPARTMENT);
+        when(darDocument.getString(DarConstants.CITY)).thenReturn(CITY);
+        when(darDocument.getString(DarConstants.COUNTRY)).thenReturn(COUNTRY);
 
         when(darDocument.get(DarConstants.DATASET_DETAIL)).thenReturn(getDatasetDetail());
     }
@@ -90,6 +101,13 @@ public class DARModalDetailsDTOTest {
         assertTrue(modalDetailsDTO.getPurposeStatements().size() == 10);
 
         assertTrue(modalDetailsDTO.getResearchType().size() == 5);
+        assertFalse(modalDetailsDTO.getResearcherHasPi());
+        assertTrue(modalDetailsDTO.getResearcherIsThePi());
+        assertTrue(modalDetailsDTO.getProfileName().equals("Profile Name"));
+        assertTrue(modalDetailsDTO.getPiName().equals("Pi Name"));
+        assertTrue(modalDetailsDTO.getResearcherDepartment().equals("Researcher department"));
+        assertTrue(modalDetailsDTO.getResearcherCity().equals("City"));
+        assertTrue(modalDetailsDTO.getResearcherCountry().equals("Country"));
     }
 
     private List<Map<String, String>> ontologies(){

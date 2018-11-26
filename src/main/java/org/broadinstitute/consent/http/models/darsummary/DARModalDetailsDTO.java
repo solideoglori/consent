@@ -2,6 +2,7 @@ package org.broadinstitute.consent.http.models.darsummary;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.broadinstitute.consent.http.models.DACUser;
 import org.broadinstitute.consent.http.service.ElectionAPI;
 import org.broadinstitute.consent.http.util.DarConstants;
@@ -29,10 +30,13 @@ public class DARModalDetailsDTO {
     private boolean sensitivePopulation = false;
     private boolean requiresManualReview = false;
     private Integer userId;
-    private boolean isThePi;
-    private boolean havePi;
     private String profileName;
     private String piName;
+    private String researcherDepartment;
+    private String researcherCity;
+    private String researcherCountry;
+    private Boolean researcherHasPi;
+    private Boolean researcherIsThePi;
 
     @JsonProperty
     private Map<String, String> datasetDetail;
@@ -50,10 +54,6 @@ public class DARModalDetailsDTO {
     public DARModalDetailsDTO(Document darDocument){
         setDarCode(darDocument.getString(DarConstants.DAR_CODE));
         setPrincipalInvestigator(darDocument.getString(DarConstants.INVESTIGATOR));
-        setProfileName(darDocument.getString(DarConstants.PROFILE_NAME));
-        setIsThePi(Boolean.parseBoolean(darDocument.getString(DarConstants.IS_THE_PI)));
-        setHavePi(Boolean.parseBoolean(darDocument.getString(DarConstants.HAVE_PÏ)));
-        setPiName(darDocument.getString(DarConstants.PI_NAME));
         setInstitutionName(this.institutionName = darDocument.getString(DarConstants.INSTITUTION));
         setProjectTitle(this.projectTitle = darDocument.getString(DarConstants.PROJECT_TITLE));
         setIsThereDiseases(false);
@@ -62,6 +62,15 @@ public class DARModalDetailsDTO {
         setDiseases(generateDiseasesSummary(darDocument));
         setPurposeStatements(generatePurposeStatementsSummary(darDocument));
         setDatasetDetail((ArrayList<Document>) darDocument.get(DarConstants.DATASET_DETAIL));
+        setProfileName(darDocument.getString(DarConstants.PROFILE_NAME));
+        setResearcherPiName(darDocument.getString(DarConstants.PI_NAME));
+        setResearcherDepartment(darDocument.getString(DarConstants.DEPARTMENT));
+        setResearcherCity(darDocument.getString(DarConstants.CITY));
+        setResearcherCountry(darDocument.getString(DarConstants.COUNTRY));
+        setResearcherHasPi(StringUtils.isNotEmpty(darDocument.getString(DarConstants.HAVE_PÏ)) ?
+                Boolean.parseBoolean(darDocument.getString(DarConstants.HAVE_PÏ)) : null);
+        setResearcherIsThePi(StringUtils.isNotEmpty(darDocument.getString(DarConstants.IS_THE_PI)) ?
+                Boolean.parseBoolean(darDocument.getString(DarConstants.IS_THE_PI)) : null);
     }
 
     public String getNeedDOApproval() {
@@ -299,22 +308,6 @@ public class DARModalDetailsDTO {
         this.userId = userId;
     }
 
-    public boolean isThePi() {
-        return isThePi;
-    }
-
-    public void setIsThePi(boolean isThePi) {
-        this.isThePi = isThePi;
-    }
-
-    public boolean havePi() {
-        return havePi;
-    }
-
-    public void setHavePi(boolean havePi) {
-        this.havePi = havePi;
-    }
-
     public String getProfileName() {
         return profileName;
     }
@@ -327,9 +320,48 @@ public class DARModalDetailsDTO {
         return piName;
     }
 
-    public void setPiName(String piName) {
+    public void setResearcherPiName(String piName) {
         this.piName = piName;
     }
 
+    public String getResearcherDepartment() {
+        return researcherDepartment;
+    }
+
+    public void setResearcherDepartment(String researcherDepartment) {
+        this.researcherDepartment = researcherDepartment;
+    }
+
+    public String getResearcherCity() {
+        return researcherCity;
+    }
+
+    public void setResearcherCity(String researcherCity) {
+        this.researcherCity = researcherCity;
+    }
+
+    public String getResearcherCountry() {
+        return researcherCountry;
+    }
+
+    public void setResearcherCountry(String researcherCountry) {
+        this.researcherCountry = researcherCountry;
+    }
+
+    public Boolean getResearcherHasPi() {
+        return researcherHasPi;
+    }
+
+    public void setResearcherHasPi(Boolean researcherHasPi) {
+        this.researcherHasPi = researcherHasPi;
+    }
+
+    public Boolean getResearcherIsThePi() {
+        return researcherIsThePi;
+    }
+
+    public void setResearcherIsThePi(Boolean researcherIsThePi) {
+        this.researcherIsThePi = researcherIsThePi;
+    }
 }
 
