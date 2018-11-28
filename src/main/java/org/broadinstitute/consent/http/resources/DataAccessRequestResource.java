@@ -156,7 +156,7 @@ public class DataAccessRequestResource extends Resource {
         Document dar = dataAccessRequestAPI.describeDataAccessRequestById(id);
         Integer userId = obtainUserId(dar);
         DACUserRole role = dacUserAPI.getRoleStatus(userId);
-        return new DARModalDetailsDTO(dar, dacUserAPI.describeDACUserById(dar.getInteger("userId")), electionAPI, role.getStatus(), role.getRationale());
+        return dataAccessRequestAPI.DARModalDetailsDTOBuilder(dar, dacUserAPI.describeDACUserById(dar.getInteger("userId")), electionAPI, role);
     }
 
     @GET
@@ -410,20 +410,6 @@ public class DataAccessRequestResource extends Resource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new Error(e.getMessage(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
         }
     }
-
-    @PUT
-    @Produces("application/json")
-    @Path("/dataset")
-    @PermitAll
-    public Response updateObjectIdByDataset() {
-        try{
-            dataSetAPI.updateDataSetAlias();
-            return Response.ok(dataSetAPI.updateDataSetIdToDAR()).build();
-        } catch(Exception e) {
-            return createExceptionResponse(e);
-        }
-    }
-
 
     private Document savePartialDarRequest(Document dar) throws Exception{
         dar.append(DarConstants.SORT_DATE,new Date());

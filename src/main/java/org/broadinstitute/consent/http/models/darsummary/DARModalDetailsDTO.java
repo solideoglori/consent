@@ -2,9 +2,7 @@ package org.broadinstitute.consent.http.models.darsummary;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.broadinstitute.consent.http.models.DACUser;
-import org.broadinstitute.consent.http.service.ElectionAPI;
 import org.broadinstitute.consent.http.util.DarConstants;
 import org.bson.Document;
 
@@ -22,6 +20,11 @@ public class DARModalDetailsDTO {
     private String projectTitle;
     private String status;
     private String rationale;
+    private String department;
+    private String city;
+    private String country;
+    private String nihUsername;
+    private Boolean haveNihUsername;
     private List<SummaryItem> researchType;
     private List<String> diseases;
     private List<SummaryItem> purposeStatements;
@@ -42,73 +45,49 @@ public class DARModalDetailsDTO {
     private Map<String, String> datasetDetail;
     private String needDOApproval = "";
 
-    public DARModalDetailsDTO(Document darDocument, DACUser owner, ElectionAPI electionAPI, String status, String rationale){
-        this(darDocument);
-        setNeedDOApproval(electionAPI.darDatasetElectionStatus((darDocument.get(DarConstants.ID).toString())));
-        setResearcherName(owner, darDocument.getString(DarConstants.INVESTIGATOR));
-        setStatus(status);
-        setRationale(rationale);
-        setUserId(darDocument.getInteger(DarConstants.USER_ID));
-    }
 
-    public DARModalDetailsDTO(Document darDocument){
-        setDarCode(darDocument.getString(DarConstants.DAR_CODE));
-        setPrincipalInvestigator(darDocument.getString(DarConstants.INVESTIGATOR));
-        setInstitutionName(this.institutionName = darDocument.getString(DarConstants.INSTITUTION));
-        setProjectTitle(this.projectTitle = darDocument.getString(DarConstants.PROJECT_TITLE));
-        setIsThereDiseases(false);
-        setIsTherePurposeStatements(false);
-        setResearchType(generateResearchTypeSummary(darDocument));
-        setDiseases(generateDiseasesSummary(darDocument));
-        setPurposeStatements(generatePurposeStatementsSummary(darDocument));
-        setDatasetDetail((ArrayList<Document>) darDocument.get(DarConstants.DATASET_DETAIL));
-        setProfileName(darDocument.getString(DarConstants.PROFILE_NAME));
-        setResearcherPiName(darDocument.getString(DarConstants.PI_NAME));
-        setResearcherDepartment(darDocument.getString(DarConstants.DEPARTMENT));
-        setResearcherCity(darDocument.getString(DarConstants.CITY));
-        setResearcherCountry(darDocument.getString(DarConstants.COUNTRY));
-        setResearcherHasPi(StringUtils.isNotEmpty(darDocument.getString(DarConstants.HAVE_PÏ)) ?
-                Boolean.parseBoolean(darDocument.getString(DarConstants.HAVE_PÏ)) : null);
-        setResearcherIsThePi(StringUtils.isNotEmpty(darDocument.getString(DarConstants.IS_THE_PI)) ?
-                Boolean.parseBoolean(darDocument.getString(DarConstants.IS_THE_PI)) : null);
-    }
+    public DARModalDetailsDTO() {}
 
     public String getNeedDOApproval() {
         return needDOApproval;
     }
 
-    public void setNeedDOApproval(String needDOApproval) {
+    public DARModalDetailsDTO setNeedDOApproval(String needDOApproval) {
         this.needDOApproval = needDOApproval;
+        return this;
     }
 
     public String getResearcherName() {
         return researcherName;
     }
 
-    public void setResearcherName(DACUser owner, String principalInvestigator) {
+    public DARModalDetailsDTO setResearcherName(DACUser owner, String principalInvestigator) {
         if(owner.getDisplayName().equals(principalInvestigator)){
             researcherName = principalInvestigator;
         } else {
             researcherName = owner.getDisplayName();
         }
+        return this;
     }
 
     public boolean isRequiresManualReview() {
         return requiresManualReview;
     }
 
-    private void manualReviewIsTrue(){
+    private DARModalDetailsDTO manualReviewIsTrue(){
         this.requiresManualReview = true;
+        return this;
     }
-    private void sensitivePopulationIsTrue(){
+    private DARModalDetailsDTO sensitivePopulationIsTrue(){
         this.sensitivePopulation = true;
+        return this;
     }
 
     public boolean isSensitivePopulation() {
         return sensitivePopulation;
     }
 
-    private List<SummaryItem> generatePurposeStatementsSummary(Document darDocument) {
+    public List<SummaryItem> generatePurposeStatementsSummary(Document darDocument) {
         List<SummaryItem> psList = new ArrayList<>();
         if(darDocument.getBoolean("forProfit")){
             psList.add(new SummaryItem(SummaryConstants.PS_FOR_PROFIT, false));
@@ -204,8 +183,9 @@ public class DARModalDetailsDTO {
         return researchList;
     }
 
-    public void setDarCode(String darCode) {
+    public DARModalDetailsDTO setDarCode(String darCode) {
         this.darCode = darCode;
+        return this;
     }
 
     public String getDarCode() {
@@ -216,152 +196,219 @@ public class DARModalDetailsDTO {
         return principalInvestigator;
     }
 
-    public void setPrincipalInvestigator(String principalInvestigator) {
+    public DARModalDetailsDTO setPrincipalInvestigator(String principalInvestigator) {
         this.principalInvestigator = principalInvestigator;
+        return this;
     }
 
     public String getInstitutionName() {
         return institutionName;
     }
 
-    public void setInstitutionName(String institutionName) {
+    public DARModalDetailsDTO setInstitutionName(String institutionName) {
         this.institutionName = institutionName;
+        return this;
     }
 
     public String getProjectTitle() {
         return projectTitle;
     }
 
-    public void setProjectTitle(String projectTitle) {
+    public DARModalDetailsDTO setProjectTitle(String projectTitle) {
         this.projectTitle = projectTitle;
+        return this;
     }
 
     public List<SummaryItem> getResearchType() {
         return researchType;
     }
 
-    public void setResearchType(List<SummaryItem> researchType) {
-        this.researchType = researchType;
+    public DARModalDetailsDTO setResearchType(Document dar) {
+        this.researchType = generateResearchTypeSummary(dar);
+        return this;
     }
 
     public List<String> getDiseases() {
         return diseases;
     }
 
-    public void setDiseases(List<String> diseases) {
-        this.diseases = diseases;
+    public DARModalDetailsDTO setDiseases(Document darDocument) {
+        this.diseases = generateDiseasesSummary(darDocument);
+        return this;
     }
 
     public List<SummaryItem> getPurposeStatements() {
         return purposeStatements;
     }
 
-    public void setPurposeStatements(List<SummaryItem> purposeStatements) {
-        this.purposeStatements = purposeStatements;
+    public DARModalDetailsDTO setPurposeStatements(Document darDocuement) {
+        this.purposeStatements = generatePurposeStatementsSummary(darDocuement);
+        return this;
     }
 
     public boolean isThereDiseases() {
         return isThereDiseases;
     }
 
-    public void setIsThereDiseases(boolean isThereDiseases) {
+    public DARModalDetailsDTO setIsThereDiseases(boolean isThereDiseases) {
         this.isThereDiseases = isThereDiseases;
+        return this;
     }
 
     public boolean isTherePurposeStatements() {
         return isTherePurposeStatements;
     }
 
-    public void setIsTherePurposeStatements(boolean isTherePurposeStatements) {
+    public DARModalDetailsDTO setIsTherePurposeStatements(boolean isTherePurposeStatements) {
         this.isTherePurposeStatements = isTherePurposeStatements;
+        return this;
     }
 
-    public void setDatasetDetail(ArrayList<Document> datasetDetail) {
+    public DARModalDetailsDTO setDatasetDetail(ArrayList<Document> datasetDetail) {
         Map<String, String> datasetDetailMap = new HashMap<>();
         datasetDetail.forEach((doc) -> {
             String objectId = doc.getString(DarConstants.OBJECT_ID) != null ? doc.getString(DarConstants.OBJECT_ID) : "--";
             datasetDetailMap.put(doc.getString("name"), objectId);
         });
         this.datasetDetail = datasetDetailMap;
+        return this;
     }
+
     public String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public DARModalDetailsDTO setStatus(String status) {
         this.status = status;
+        return this;
     }
 
     public String getRationale() {
         return rationale;
     }
 
-    public void setRationale(String rationale) {
+    public DARModalDetailsDTO setRationale(String rationale) {
         this.rationale = rationale;
+        return this;
     }
 
     public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public DARModalDetailsDTO setUserId(Integer userId) {
         this.userId = userId;
+        return this;
     }
 
     public String getProfileName() {
         return profileName;
     }
 
-    public void setProfileName(String profileName) {
+    public DARModalDetailsDTO setProfileName(String profileName) {
         this.profileName = profileName;
+        return this;
     }
 
     public String getPiName() {
         return piName;
     }
 
-    public void setResearcherPiName(String piName) {
+    public DARModalDetailsDTO setResearcherPiName(String piName) {
         this.piName = piName;
+        return this;
     }
 
     public String getResearcherDepartment() {
         return researcherDepartment;
     }
 
-    public void setResearcherDepartment(String researcherDepartment) {
+    public DARModalDetailsDTO setResearcherDepartment(String researcherDepartment) {
         this.researcherDepartment = researcherDepartment;
+        return this;
     }
 
     public String getResearcherCity() {
         return researcherCity;
     }
 
-    public void setResearcherCity(String researcherCity) {
+    public DARModalDetailsDTO setResearcherCity(String researcherCity) {
         this.researcherCity = researcherCity;
+        return this;
     }
 
     public String getResearcherCountry() {
         return researcherCountry;
     }
 
-    public void setResearcherCountry(String researcherCountry) {
+    public DARModalDetailsDTO  setResearcherCountry(String researcherCountry) {
         this.researcherCountry = researcherCountry;
+        return this;
     }
 
     public Boolean getResearcherHasPi() {
         return researcherHasPi;
     }
 
-    public void setResearcherHasPi(Boolean researcherHasPi) {
+    public DARModalDetailsDTO  setResearcherHasPi(Boolean researcherHasPi) {
         this.researcherHasPi = researcherHasPi;
+        return this;
     }
 
     public Boolean getResearcherIsThePi() {
         return researcherIsThePi;
     }
 
-    public void setResearcherIsThePi(Boolean researcherIsThePi) {
+    public DARModalDetailsDTO setResearcherIsThePi(Boolean researcherIsThePi) {
         this.researcherIsThePi = researcherIsThePi;
+        return this;
     }
-}
 
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public DARModalDetailsDTO setDepartment(String department) {
+        this.department = department;
+        return this;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public DARModalDetailsDTO setCity(String city) {
+        this.city = city;
+        return this;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public DARModalDetailsDTO setCountry(String country) {
+        this.country = country;
+        return this;
+    }
+
+
+    public Boolean getHaveNihUsername() {
+        return haveNihUsername;
+    }
+
+    public DARModalDetailsDTO setHaveNihUsername(Boolean haveNihUsername) {
+        this.haveNihUsername = haveNihUsername;
+        return this;
+    }
+
+    public String getNihUsername() {
+        return nihUsername;
+    }
+
+    public DARModalDetailsDTO setNihUsername(String nihUsername) {
+        this.nihUsername = nihUsername;
+        return this;
+    }
+
+}
