@@ -1,5 +1,6 @@
 package org.broadinstitute.consent.http;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import de.spinscale.dropwizard.jobs.JobsBundle;
@@ -15,7 +16,6 @@ import io.dropwizard.jdbi.bundles.DBIExceptionsBundle;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import jersey.repackaged.com.google.common.collect.Lists;
 import org.broadinstitute.consent.http.authentication.AbstractOAuthAuthenticator;
 import org.broadinstitute.consent.http.authentication.BasicAuthenticator;
 import org.broadinstitute.consent.http.authentication.BasicCustomAuthFilter;

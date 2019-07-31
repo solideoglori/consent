@@ -18,7 +18,7 @@
     <lucene.version>7.5.0</lucene.version>
     <hsqldb.version>2.3.3</hsqldb.version>
     <liquibase.version>3.6.2</liquibase.version>
-    <dropwizard.version>1.3.7</dropwizard.version>
+    <dropwizard.version>1.3.13</dropwizard.version>
     <pdfbox.version>2.0.15</pdfbox.version>
     <jetty.version>9.4.14.v20181114</jetty.version>
     <owl.version>5.1.7</owl.version>
@@ -399,9 +399,21 @@
     </dependency>
 
     <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-common</artifactId>
+      <version>2.25.1</version>
+    </dependency>
+
+    <dependency>
       <groupId>io.dropwizard</groupId>
       <artifactId>dropwizard-client</artifactId>
       <version>${dropwizard.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.glassfish.jersey.core</groupId>
+          <artifactId>jersey-common</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
